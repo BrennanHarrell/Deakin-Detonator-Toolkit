@@ -72,6 +72,19 @@ jobs:
         runs-on: ubuntu-latest
         needs: dependencies # Ensure this job only runs after the 'dependencies' job is successful
         steps:
+        
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            # Restore Trivy Cache
+            - name: Restore Trivy Cache
+              uses: actions/cache@v4
+              with:
+                 path: ~/.cache/trivy
+                 key: cache-trivy-${{ runner.os }}
+                 restore-keys: |
+                  cache-trivy-${{ runner.os }}
+                  
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
               uses: aquasecurity/trivy-action@0.20.0
@@ -82,6 +95,7 @@ jobs:
                   severity: "HIGH,CRITICAL"
                   exit-code: 1
               env:
+                  TRIVY_CACHE_DIR: ~/.cache/trivy
                   TRIVY_SKIP_DB_UPDATE: true
                   TRIVY_SKIP_JAVA_DB_UPDATE: true
 
