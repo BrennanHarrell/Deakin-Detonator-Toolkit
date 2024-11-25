@@ -35,5 +35,3 @@ jobs:
         with:
           path: ~/.cache/trivy
           key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
-          restore-keys: |
-            cache-trivy-${{ runner.os }}-
