@@ -81,7 +81,7 @@ jobs:
               id: cache
               uses: actions/cache@v4
               with:
-                path: ~/.cache/trivy
+                path: $GITHUB_WORKSPACE/.cache/trivy
                 key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
                 restore-keys: |
                   cache-trivy-${{ runner.os }}-
@@ -95,6 +95,11 @@ jobs:
             - name: Set TRIVY_SKIP_DB_UPDATE environment variable
               if: steps.cache.outputs.cache-hit == 'true'
               run: echo "TRIVY_SKIP_DB_UPDATE=true" >> $GITHUB_ENV
+        
+            # Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
+            - name: Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
+              if: steps.cache.outputs.cache-hit == 'true'
+              run: echo "TRIVY_SKIP_JAVA_DB_UPDATE=true" >> $GITHUB_ENV
               
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
@@ -106,17 +111,17 @@ jobs:
                 severity: "HIGH,CRITICAL"
                 exit-code: 1
               env:
-                TRIVY_CACHE_DIR: ~/.cache/trivy
+                TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
                 TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
-                TRIVY_SKIP_JAVA_DB_UPDATE: true
-        
+                TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
+
             # Save the updated cache if needed
             - name: Save Trivy Cache
               if: steps.cache.outputs.cache-hit != 'true'
               uses: actions/cache@v4
               with:
-                path: ~/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.sha }}
+                path: $GITHUB_WORKSPACE/.cache/trivy
+                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
 
               # Secrets scan
             - name: Run TruffleHog scan
@@ -124,6 +129,7 @@ jobs:
                   docker run --rm -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github \
                   --repo https://github.com/Hardhat-Enterprises/Deakin-Detonator-Toolkit \
                   --only-verified
+                  
     # Application build job
     build:
         runs-on: ubuntu-latest
