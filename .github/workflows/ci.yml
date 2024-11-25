@@ -81,9 +81,19 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: ~/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.sha }}
+                key: cache-trivy-${{ runner.os }}-${{ github.ref }}
                 restore-keys: |
                   cache-trivy-${{ runner.os }}-
+
+            # Debug cache hit status
+            - name: Debug cache hit
+              run: |
+                echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
+
+            # Set TRIVY_SKIP_DB_UPDATE based on cache hit
+            - name: Set TRIVY_SKIP_DB_UPDATE environment variable
+              run: echo "TRIVY_SKIP_DB_UPDATE=true" >> $GITHUB_ENV
+              if: steps.cache.outputs.cache-hit == 'true'
                   
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
@@ -96,7 +106,7 @@ jobs:
                   exit-code: 1
               env:
                   TRIVY_CACHE_DIR: ~/.cache/trivy
-                  TRIVY_SKIP_DB_UPDATE: ${{ steps.cache.outputs.cache-hit == 'true' }}
+                  TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
                   TRIVY_SKIP_JAVA_DB_UPDATE: true
 
               # Secrets scan
