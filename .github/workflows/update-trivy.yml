@@ -18,20 +18,22 @@ jobs:
 
       - name: Download and extract the vulnerability DB
         run: |
-          mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
+          mkdir -p ~/.cache/trivy/db
           oras pull ghcr.io/aquasecurity/trivy-db:2
-          tar -xzf db.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/db
+          tar -xzf db.tar.gz -C ~/.cache/trivy/db
           rm db.tar.gz
 
       - name: Download and extract the Java DB
         run: |
-          mkdir -p $GITHUB_WORKSPACE/.cache/trivy/java-db
+          mkdir -p ~/.cache/trivy/java-db
           oras pull ghcr.io/aquasecurity/trivy-java-db:1
-          tar -xzf javadb.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/java-db
+          tar -xzf javadb.tar.gz -C ~/.cache/trivy/java-db
           rm javadb.tar.gz
 
       - name: Cache DBs
         uses: actions/cache/save@v4
         with:
           path: ~/.cache/trivy
-          key: cache-trivy-${{ steps.date.outputs.date }}
+          key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
+          restore-keys: |
+            cache-trivy-${{ runner.os }}-
