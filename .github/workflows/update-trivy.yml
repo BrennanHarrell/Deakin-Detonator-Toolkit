@@ -8,7 +8,16 @@ on:
 jobs:
   update-trivy-db:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Restore Trivy DB Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
+          restore-keys: |
+            cache-trivy-${{ runner.os }}-
+
       - name: Setup oras
         uses: oras-project/setup-oras@v1
 
@@ -31,7 +40,7 @@ jobs:
           rm javadb.tar.gz
 
       - name: Cache DBs
-        uses: actions/cache/save@v4
+        uses: actions/cache@v4
         with:
           path: ~/.cache/trivy
-          key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
+          key: cache-trivy-${{ runner.os }}-${{ github.sha }}
