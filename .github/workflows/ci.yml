@@ -80,10 +80,10 @@ jobs:
             - name: Restore Trivy Cache
               uses: actions/cache@v4
               with:
-                 path: ~/.cache/trivy
-                 key: cache-trivy-${{ runner.os }}
-                 restore-keys: |
-                  cache-trivy-${{ runner.os }}
+                path: ~/.cache/trivy
+                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
+                restore-keys: |
+                  cache-trivy-${{ runner.os }}-
                   
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
