@@ -25,16 +25,19 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Download and extract the vulnerability DB
+      - name: Create Trivy cache directories
         run: |
           mkdir -p ~/.cache/trivy/db
+          mkdir -p ~/.cache/trivy/java-db
+
+      - name: Download and extract the vulnerability DB
+        run: |
           oras pull ghcr.io/aquasecurity/trivy-db:2
           tar -xzf db.tar.gz -C ~/.cache/trivy/db
           rm db.tar.gz
 
       - name: Download and extract the Java DB
         run: |
-          mkdir -p ~/.cache/trivy/java-db
           oras pull ghcr.io/aquasecurity/trivy-java-db:1
           tar -xzf javadb.tar.gz -C ~/.cache/trivy/java-db
           rm javadb.tar.gz
