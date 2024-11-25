@@ -96,7 +96,7 @@ jobs:
                   exit-code: 1
               env:
                   TRIVY_CACHE_DIR: ~/.cache/trivy
-                  TRIVY_SKIP_DB_UPDATE: true
+                  TRIVY_SKIP_DB_UPDATE: ${{ steps.cache.outputs.cache-hit == 'true' }}
                   TRIVY_SKIP_JAVA_DB_UPDATE: true
 
               # Secrets scan
