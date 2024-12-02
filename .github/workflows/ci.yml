@@ -78,19 +78,18 @@ jobs:
               
             # Ensure the Trivy cache directory exists
             - name: Ensure Cache Directory Exists
-              run: mkdir -p $HOME/.cache/trivy
+              run: mkdir -p $GITHUB_WORKSPACE/.cache/trivy
 
             # Restore Trivy Cache
             - name: Restore Cache
               id: cache
               uses: actions/cache@v4
               with:
-                path: $HOME/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}  # Shared cache for all PRs
+                path: $GITHUB_WORKSPACE/.cache/trivy 
+                key: cache-trivy-${{ runner.os }}  # Cache key based on runner OS
                 restore-keys: |
-                  cache-trivy-${{ runner.os }}-${{ github.default_branch }}-  # Fallback to default branch cache
-                  cache-trivy-${{ runner.os }}-  # Fallback to OS-level cache
-
+                  cache-trivy-${{ runner.os }}
+          
             # Debug cache hit status
             - name: Debug cache hit
               run: |
@@ -115,7 +114,7 @@ jobs:
                 severity: "HIGH,CRITICAL"
                 exit-code: 1
               env:
-                TRIVY_CACHE_DIR: $HOME/.cache/trivy
+                TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
                 TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
                 TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
       
@@ -123,9 +122,9 @@ jobs:
               if: steps.cache.outputs.cache-hit != 'true'
               uses: actions/cache@v4
               with:
-                path: $HOME/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
-
+                path: $GITHUB_WORKSPACE/.cache/trivy
+                key: cache-trivy-${{ runner.os }}-${{ github.sha }}
+        
               # Secrets scan
             - name: Run TruffleHog scan
               run: |
