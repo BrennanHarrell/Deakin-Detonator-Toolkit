@@ -74,15 +74,6 @@ jobs:
           - name: Checkout code
             uses: actions/checkout@v3
             
-          - name: List cache directory contents
-            run: ls -la $GITHUB_WORKSPACE/.cache/trivy
-            
-          - name: Log cache key
-            run: |
-                echo "Cache key: ${{ inputs.cache-key }}"
-                
-          - name: Check permissions
-            run: ls -la $GITHUB_WORKSPACE/.cache
 
           - name: Restore Trivy Cache
             id: cache
@@ -92,6 +83,20 @@ jobs:
               key: cache-trivy-${{ runner.os }}
               restore-keys: |
                 cache-trivy-${{ runner.os }}-
+
+          - name: List cache directory contents
+            run: ls -la $GITHUB_WORKSPACE/.cache/trivy
+            
+          - name: Log cache key
+            run: |
+                echo "Cache key: ${{ inputs.cache-key }}"
+                
+          - name: Check permissions
+            run: ls -la $GITHUB_WORKSPACE/.cache
+            
+          - name: Debug workspace path
+            run: |
+               echo "Workspace is: $GITHUB_WORKSPACE"
     
           - name: Debug cache hit
             run: |
