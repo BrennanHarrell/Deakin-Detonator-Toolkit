@@ -4,15 +4,15 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main   # Trigger the workflow on PUSHES to 'main'
-      - dev    # Trigger the workflow on PUSHES to 'dev'
-  pull_request:
-    branches:
-      - main   # Trigger the workflow on PULL REQUESTS targeting 'main'
-      - dev    # Trigger the workflow on PULL REQUESTS targeting 'dev'
-
+    push:
+        branches:
+            - main # Trigger the workflow on PUSHES to 'main'
+            - dev # Trigger the workflow on PUSHES to 'dev'
+    pull_request:
+        branches:
+            - main # Trigger the workflow on PULL REQUESTS targeting 'main'
+            - dev # Trigger the workflow on PULL REQUESTS targeting 'dev'
+##
 jobs:
     # Dependency setup job
     dependencies:
@@ -72,10 +72,9 @@ jobs:
         runs-on: ubuntu-latest
         needs: dependencies # Ensure this job only runs after the 'dependencies' job is successful
         steps:
-        
             - name: Checkout code
               uses: actions/checkout@v3
-              
+
             # Ensure the Trivy cache directory exists
             - name: Ensure Cache Directory Exists
               run: mkdir -p $GITHUB_WORKSPACE/.cache/trivy
@@ -85,53 +84,53 @@ jobs:
               id: cache
               uses: actions/cache@v4
               with:
-                path: $GITHUB_WORKSPACE/.cache/trivy 
-                key: cache-trivy-${{ runner.os }}  # Cache key based on runner OS
-                restore-keys: |
-                  cache-trivy-${{ runner.os }}
-          
+                  path: $GITHUB_WORKSPACE/.cache/trivy
+                  key: cache-trivy-${{ runner.os }} # Cache key based on runner OS
+                  restore-keys: |
+                      cache-trivy-${{ runner.os }}
+
             # Debug cache hit status
             - name: Debug cache hit
               run: |
-                echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
+                  echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
 
             # Set TRIVY_SKIP_DB_UPDATE based on cache hit
             - name: Set TRIVY_SKIP_DB_UPDATE environment variable
               if: steps.cache.outputs.cache-hit == 'true'
               run: echo "TRIVY_SKIP_DB_UPDATE=true" >> $GITHUB_ENV
-        
+
             # Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
             - name: Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
               if: steps.cache.outputs.cache-hit == 'true'
               run: echo "TRIVY_SKIP_JAVA_DB_UPDATE=true" >> $GITHUB_ENV
-              
+
             - name: Run Trivy vulnerability scanner
               uses: aquasecurity/trivy-action@0.20.0
               with:
-                scan-type: "fs"
-                ignore-unfixed: true
-                format: "table"
-                severity: "HIGH,CRITICAL"
-                exit-code: 1
+                  scan-type: "fs"
+                  ignore-unfixed: true
+                  format: "table"
+                  severity: "HIGH,CRITICAL"
+                  exit-code: 1
               env:
-                TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
-                TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
-                TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
-      
+                  TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
+                  TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
+                  TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
+
             - name: Save updated Trivy Cache
               if: steps.cache.outputs.cache-hit != 'true'
               uses: actions/cache@v4
               with:
-                path: $GITHUB_WORKSPACE/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.sha }}
-        
+                  path: $GITHUB_WORKSPACE/.cache/trivy
+                  key: cache-trivy-${{ runner.os }}-${{ github.sha }}
+
               # Secrets scan
             - name: Run TruffleHog scan
               run: |
                   docker run --rm -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github \
                   --repo https://github.com/Hardhat-Enterprises/Deakin-Detonator-Toolkit \
                   --only-verified
-                  
+
     # Application build job
     build:
         runs-on: ubuntu-latest
