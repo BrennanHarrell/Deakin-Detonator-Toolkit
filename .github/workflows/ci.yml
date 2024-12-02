@@ -130,7 +130,9 @@ jobs:
                   
             - name: Debug directory permissions
               run: ls -la $GITHUB_WORKSPACE/.cache/trivy
-
+              
+            - name: Check cache directory permissions
+              run: ls -la $GITHUB_WORKSPACE/.cache
 
               # Secrets scan
             - name: Run TruffleHog scan
