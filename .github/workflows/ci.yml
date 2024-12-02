@@ -103,24 +103,6 @@ jobs:
             - name: Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
               if: steps.cache.outputs.cache-hit == 'true'
               run: echo "TRIVY_SKIP_JAVA_DB_UPDATE=true" >> $GITHUB_ENV
-
-            # Download and extract the Trivy vulnerability DB if DB cache does not exist
-            - name: Download and extract the Trivy vulnerability DB
-              if: env.TRIVY_SKIP_DB_UPDATE != 'true'
-              run: |
-                mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
-                oras pull ghcr.io/aquasecurity/trivy-db:2
-                tar -xzf db.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/db
-                rm db.tar.gz
-            
-            # Download and extract the Java vulnerability DB if DB cache does not exist
-            - name: Download and extract the Java DB
-              if: env.TRIVY_SKIP_JAVA_DB_UPDATE != 'true'
-              run: |
-                mkdir -p $GITHUB_WORKSPACE/.cache/trivy/java-db
-                oras pull ghcr.io/aquasecurity/trivy-java-db:1
-                tar -xzf javadb.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/java-db
-                rm javadb.tar.gz
           
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
