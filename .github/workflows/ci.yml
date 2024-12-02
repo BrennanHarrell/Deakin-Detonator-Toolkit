@@ -117,8 +117,6 @@ jobs:
               path: $GITHUB_WORKSPACE/.cache/trivy
               key: cache-trivy-${{ runner.os }}
               
-          - name: List cache directory contents
-            run: ls -la $GITHUB_WORKSPACE/.cache/trivy
             
           - name: Log cache key
             run: |
@@ -130,6 +128,9 @@ jobs:
           - name: Debug workspace path
             run: |
                echo "Workspace is: $GITHUB_WORKSPACE"
+               
+          - name: List cache directory contents
+            run: ls -la $GITHUB_WORKSPACE/.cache/trivy
           
          # Secrets scan
           - name: Run TruffleHog scan
