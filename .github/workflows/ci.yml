@@ -82,6 +82,10 @@ jobs:
             - name: Fix Permissions on .cache/trivy
               run: sudo chmod -R 777 $GITHUB_WORKSPACE/.cache/trivy
 
+            - name: Debug GitHub workspace path
+              run: |
+                  echo "Workspace path: $GITHUB_WORKSPACE"
+
 
             # Restore Trivy Cache
             - name: Restore Cache
