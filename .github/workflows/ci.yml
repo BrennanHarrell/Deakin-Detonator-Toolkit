@@ -74,7 +74,6 @@ jobs:
           - name: Checkout code
             uses: actions/checkout@v3
             
-
           - name: Restore Trivy Cache
             id: cache
             uses: actions/cache@v4
@@ -88,6 +87,12 @@ jobs:
           - name: Debug cache hit
             run: |
                 echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
+
+          - name: Ensure db directory exists
+            run: |
+              echo "Checking if db directory exists"
+              mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
+              ls -la $GITHUB_WORKSPACE/.cache/trivy
     
           - name: Set TRIVY_SKIP_DB_UPDATE environment variable
             if: steps.cache.outputs.cache-hit == 'true'
@@ -121,19 +126,10 @@ jobs:
           - name: Log cache key
             run: |
                 echo "Cache key: ${{ inputs.cache-key }}"
-                
             
           - name: Debug workspace path
             run: |
                echo "Workspace is: $GITHUB_WORKSPACE"
-          - name: Debug cache directory contents
-            run: ls -la $GITHUB_WORKSPACE/.cache/trivy/db
-               
-         # - name: List cache directory contents
-         #   run: ls -la $GITHUB_WORKSPACE/.cache/trivy
-
-          #- name: Check permissions
-          #  run: ls -la $GITHUB_WORKSPACE/.cache
           
          # Secrets scan
           - name: Run TruffleHog scan
