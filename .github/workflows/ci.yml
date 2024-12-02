@@ -144,6 +144,19 @@ jobs:
               with:
                   path: ${{ github.workspace }}/.cache/trivy
                   key: cache-trivy-${{ steps.date.outputs.date }}
+
+            - name: Enable debug logging for cache
+              run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+
+            - name: Debug cache path
+              run: |
+                echo "Cache path to be saved: ${{ github.workspace }}/.cache/trivy"
+                
+            - name: Debug cache hit condition
+              run: |
+                echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
+                echo "Cache key used: ${{ steps.cache.outputs.cache-key }}"
+
                 
          # Secrets scan
             - name: Run TruffleHog scan
