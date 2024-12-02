@@ -79,7 +79,7 @@ jobs:
             id: cache
             uses: actions/cache@v4
             with:
-              path: $GITHUB_WORKSPACE/.cache/trivy
+              path: $GITHUB_WORKSPACE/.cache/trivy/db
               key: cache-trivy-${{ runner.os }}
               restore-keys: |
                 cache-trivy-${{ runner.os }}-
@@ -114,7 +114,7 @@ jobs:
             if: steps.cache.outputs.cache-hit != 'true'
             uses: actions/cache@v4
             with:
-              path: $GITHUB_WORKSPACE/.cache/trivy
+              path: $GITHUB_WORKSPACE/.cache/trivy/db
               key: cache-trivy-${{ runner.os }}
               
             
@@ -126,6 +126,8 @@ jobs:
           - name: Debug workspace path
             run: |
                echo "Workspace is: $GITHUB_WORKSPACE"
+          - name: Debug cache directory contents
+            run: ls -la $GITHUB_WORKSPACE/.cache/trivy/db
                
          # - name: List cache directory contents
          #   run: ls -la $GITHUB_WORKSPACE/.cache/trivy
