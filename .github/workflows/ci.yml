@@ -80,9 +80,11 @@ jobs:
               id: date
               run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_ENV
 
-            - name: Debug Cache Hit
+            - name: Debug Cache Key
               run: |
-                  echo "Cache Hit: ${{ steps.cache.outputs.cache-hit }}"
+                echo "Cache Key Used: ${{ steps.cache.outputs.cache-key }}"
+                echo "Cache Hit: ${{ steps.cache.outputs.cache-hit }}"
+
 
             # Restore Trivy Cache
             - name: Restore Trivy Cache
