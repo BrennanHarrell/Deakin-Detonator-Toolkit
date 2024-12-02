@@ -88,7 +88,7 @@ jobs:
                 path: ${{ github.workspace }}/.cache/trivy
                 key: cache-trivy-${{ steps.date.outputs.date }}
                 restore-keys: |
-                  cache-trivy-${{ steps.date.outputs.date }}-
+                  cache-trivy-${{ steps.date.outputs.date }}
 
             # Backup - Trivy will cause a fatal error if the cache isn't found when attempting to skip DB update
             # The environment variables TRIVY_SKIP_DB_UPDATE and TRIVY_SKIP_JAVA_DB_UPDATE are set to 'true'
