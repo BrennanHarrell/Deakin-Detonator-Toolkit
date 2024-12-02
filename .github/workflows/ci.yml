@@ -75,11 +75,6 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
 
-            # Set the current date as a variable
-            - name: Set current date
-              id: date
-              run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_ENV
-
             - name: Debug Cache Key
               run: |
                 echo "Cache Key Used: ${{ steps.cache.outputs.cache-key }}"
