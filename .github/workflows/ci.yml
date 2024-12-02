@@ -69,74 +69,26 @@ jobs:
 
     security_test:
         runs-on: ubuntu-latest
-        needs: dependencies
+        needs: dependencies # Ensure this job only runs after the 'dependencies' job is successful
         steps:
-          - name: Checkout code
-            uses: actions/checkout@v3
-            
-          - name: Restore Trivy Cache
-            id: cache
-            uses: actions/cache@v4
-            with:
-              path: $GITHUB_WORKSPACE/.cache/trivy/db
-              key: cache-trivy-${{ runner.os }}
-              restore-keys: |
-                cache-trivy-${{ runner.os }}-
-
-    
-          - name: Debug cache hit
-            run: |
-                echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
-
-          - name: Ensure db directory exists
-            run: |
-              echo "Checking if db directory exists"
-              mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
-              ls -la $GITHUB_WORKSPACE/.cache/trivy
-    
-          - name: Set TRIVY_SKIP_DB_UPDATE environment variable
-            if: steps.cache.outputs.cache-hit == 'true'
-            run: echo "TRIVY_SKIP_DB_UPDATE=true" >> $GITHUB_ENV
-    
-          - name: Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
-            if: steps.cache.outputs.cache-hit == 'true'
-            run: echo "TRIVY_SKIP_JAVA_DB_UPDATE=true" >> $GITHUB_ENV
-    
-          - name: Run Trivy vulnerability scanner
-            uses: aquasecurity/trivy-action@0.20.0
-            with:
-              scan-type: "fs"
-              ignore-unfixed: true
-              format: "table"
-              severity: "HIGH,CRITICAL"
-              exit-code: 1
-            env:
-              TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
-              TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
-              TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
-    
-          - name: Save updated Trivy Cache
-            if: steps.cache.outputs.cache-hit != 'true'
-            uses: actions/cache@v4
-            with:
-              path: $GITHUB_WORKSPACE/.cache/trivy/db
-              key: cache-trivy-${{ runner.os }}
-              
-            
-          - name: Log cache key
-            run: |
-                echo "Cache key: ${{ inputs.cache-key }}"
-            
-          - name: Debug workspace path
-            run: |
-               echo "Workspace is: $GITHUB_WORKSPACE"
+            # Vulnerability scanning
+            - name: Run Trivy vulnerability scanner in repo mode
+              uses: aquasecurity/trivy-action@0.20.0
+              with:
+                  scan-type: "fs"
+                  ignore-unfixed: true
+                  format: "table"
+                  severity: "HIGH,CRITICAL"
+                  exit-code: 1
+                  TRIVY_SKIP_DB_UPDATE: true
+                  TRIVY_SKIP_JAVA_DB_UPDATE: true
           
          # Secrets scan
-          - name: Run TruffleHog scan
-            run: |
-                docker run --rm -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github \
-                --repo https://github.com/Hardhat-Enterprises/Deakin-Detonator-Toolkit \
-                --only-verified
+            - name: Run TruffleHog scan
+              run: |
+                 docker run --rm -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github \
+                 --repo https://github.com/Hardhat-Enterprises/Deakin-Detonator-Toolkit \
+                 --only-verified
 
     # Application build job
     build:
