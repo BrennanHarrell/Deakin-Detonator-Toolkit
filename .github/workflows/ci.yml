@@ -83,7 +83,7 @@ jobs:
             # Restore Trivy Cache
             - name: Restore Trivy Cache
               id: cache
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: ${{ github.workspace }}/.cache/trivy
                 key: cache-trivy-${{ steps.date.outputs.date }}
@@ -137,7 +137,7 @@ jobs:
                  
             - name: Save updated Trivy Cache
               if: steps.cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v4
+              uses: actions/cache/save@v4
               with:
                   path: ${{ github.workspace }}/.cache/trivy
                   key: cache-trivy-${{ steps.date.outputs.date }}
