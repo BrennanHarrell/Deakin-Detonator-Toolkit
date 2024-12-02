@@ -36,7 +36,7 @@ jobs:
 
             # Step 5: Cache the databases to speed up future workflows
             - name: Cache DBs
-              uses: actions/cache/save@v4
+              uses: actions/cache/save@v3
               with:
                   path: ${{ github.workspace }}/.cache/trivy
                   key: cache-trivy-${{ steps.date.outputs.date }}
