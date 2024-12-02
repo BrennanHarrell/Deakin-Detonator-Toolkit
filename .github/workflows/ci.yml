@@ -73,7 +73,17 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v3
-    
+            
+          - name: List cache directory contents
+            run: ls -la $GITHUB_WORKSPACE/.cache/trivy
+            
+          - name: Log cache key
+            run: |
+                echo "Cache key: ${{ inputs.cache-key }}"
+                
+          - name: Check permissions
+            run: ls -la $GITHUB_WORKSPACE/.cache
+
           - name: Restore Trivy Cache
             id: cache
             uses: actions/cache@v4
