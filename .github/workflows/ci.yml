@@ -89,7 +89,6 @@ jobs:
                 key: cache-trivy-${{ steps.date.outputs.date }}
                 restore-keys: |
                   cache-trivy-${{ steps.date.outputs.date }}
-                  cache-trivy-${{ env.date }}-
                   
             - name: Debug Cache Key
               run: |
