@@ -81,9 +81,9 @@ jobs:
               uses: actions/cache@v3
               with:
                 path: ${{ github.workspace }}/.cache/trivy
-                key: cache-trivy-${{ runner.os }}
+                key: cache-trivy-${{ steps.date.outputs.date }}
                 restore-keys: |
-                  cache-trivy-${{ runner.os }}-
+                  cache-trivy-${{ steps.date.outputs.date }}-
 
             # Backup - Trivy will cause a fatal error if the cache isn't found when attempting to skip DB update
             # The environment variables TRIVY_SKIP_DB_UPDATE and TRIVY_SKIP_JAVA_DB_UPDATE are set to 'true'
@@ -135,7 +135,7 @@ jobs:
               uses: actions/cache@v3
               with:
                   path: ${{ github.workspace }}/.cache/trivy
-                  key: cache-trivy-${{ runner.os }}
+                  key: cache-trivy-${{ steps.date.outputs.date }}
                 
          # Secrets scan
             - name: Run TruffleHog scan
