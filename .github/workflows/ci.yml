@@ -82,7 +82,7 @@ jobs:
             # Restore Trivy Cache
             - name: Restore Cache
               id: cache
-              uses: actions/cache@v4
+              uses: actions/cache@v3
               with:
                   path: $GITHUB_WORKSPACE/.cache/trivy
                   key: cache-trivy-${{ runner.os }} # Cache key based on runner OS
@@ -119,7 +119,7 @@ jobs:
 
             - name: Save updated Trivy Cache
               if: steps.cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v4
+              uses: actions/cache@v3
               with:
                   path: $GITHUB_WORKSPACE/.cache/trivy
                   key: cache-trivy-${{ runner.os }}-${{ github.sha }}
