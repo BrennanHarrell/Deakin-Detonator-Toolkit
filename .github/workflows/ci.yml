@@ -122,8 +122,7 @@ jobs:
             run: |
                 echo "Cache key: ${{ inputs.cache-key }}"
                 
-          - name: Check permissions
-            run: ls -la $GITHUB_WORKSPACE/.cache
+         
             
           - name: Debug workspace path
             run: |
@@ -131,6 +130,9 @@ jobs:
                
           - name: List cache directory contents
             run: ls -la $GITHUB_WORKSPACE/.cache/trivy
+
+          - name: Check permissions
+            run: ls -la $GITHUB_WORKSPACE/.cache
           
          # Secrets scan
           - name: Run TruffleHog scan
