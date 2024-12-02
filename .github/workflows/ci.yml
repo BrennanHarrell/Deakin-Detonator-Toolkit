@@ -77,20 +77,19 @@ jobs:
               uses: actions/checkout@v3
               
             # Ensure the Trivy cache directory exists
-            - name: Ensure Trivy Cache Directory Exists
-              run: | 
-                mkdir -p $GITHUB_WORKSPACE/.cache/trivy
-                chmod -R 777 $GITHUB_WORKSPACE/.cache/trivy
+            - name: Ensure Cache Directory Exists
+              run: mkdir -p $HOME/.cache/trivy
 
             # Restore Trivy Cache
-            - name: Restore Trivy Cache
+            - name: Restore Cache
               id: cache
               uses: actions/cache@v4
               with:
-                path: $GITHUB_WORKSPACE/.cache/trivy
-                key: cache-trivy-${{ runner.os }}
+                path: $HOME/.cache/trivy
+                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}  # Shared cache for all PRs
                 restore-keys: |
-                  cache-trivy-${{ runner.os }}-
+                  cache-trivy-${{ runner.os }}-${{ github.default_branch }}-  # Fallback to default branch cache
+                  cache-trivy-${{ runner.os }}-  # Fallback to OS-level cache
 
             # Debug cache hit status
             - name: Debug cache hit
@@ -116,7 +115,7 @@ jobs:
                 severity: "HIGH,CRITICAL"
                 exit-code: 1
               env:
-                TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
+                TRIVY_CACHE_DIR: $HOME/.cache/trivy
                 TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
                 TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
       
@@ -124,8 +123,8 @@ jobs:
               if: steps.cache.outputs.cache-hit != 'true'
               uses: actions/cache@v4
               with:
-                path: $GITHUB_WORKSPACE/.cache/trivy
-                key: cache-trivy-${{ runner.os }}
+                path: $HOME/.cache/trivy
+                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
 
               # Secrets scan
             - name: Run TruffleHog scan
