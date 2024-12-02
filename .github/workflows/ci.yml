@@ -78,7 +78,7 @@ jobs:
               # Set the current date as a variable
             - name: Set current date
               id: date
-              run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+              run: echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
             # Restore Trivy Cache
             - name: Restore Trivy Cache
