@@ -123,6 +123,10 @@ jobs:
               with:
                   path: $GITHUB_WORKSPACE/.cache/trivy
                   key: cache-trivy-${{ runner.os }}-${{ github.sha }}
+                  
+            - name: Debug directory permissions
+              run: ls -la $GITHUB_WORKSPACE/.cache/trivy
+
 
               # Secrets scan
             - name: Run TruffleHog scan
