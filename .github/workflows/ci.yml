@@ -88,7 +88,7 @@ jobs:
             # Backup - Trivy will cause a fatal error if the cache isn't found when attempting to skip DB update
             # The environment variables TRIVY_SKIP_DB_UPDATE and TRIVY_SKIP_JAVA_DB_UPDATE are set to 'true'
             # If the cache is not found, the databases will be manually downloaded and extracted to avoid a fatal error during the first run.
-                  
+                  ###
             # Set TRIVY_SKIP_DB_UPDATE based on cache hit
             - name: Set TRIVY_SKIP_DB_UPDATE environment variable
               if: steps.cache.outputs.cache-hit == 'true'
