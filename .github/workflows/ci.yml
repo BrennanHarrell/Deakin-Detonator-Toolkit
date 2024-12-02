@@ -71,12 +71,11 @@ jobs:
         runs-on: ubuntu-latest
         needs: dependencies # Ensure this job only runs after the 'dependencies' job is successful
         steps:
-
-                # Step 1: Checkout the code
+        
             - name: Checkout code
               uses: actions/checkout@v3
 
-            # Step 2: Restore the Trivy cache
+            # Restore Trivy Cache
             - name: Restore Trivy Cache
               id: cache
               uses: actions/cache@v3
@@ -85,10 +84,42 @@ jobs:
                 key: cache-trivy-${{ runner.os }}
                 restore-keys: |
                   cache-trivy-${{ runner.os }}-
+
+            # Backup - Trivy will cause a fatal error if the cache isn't found when attempting to skip DB update
+            # The environment variables TRIVY_SKIP_DB_UPDATE and TRIVY_SKIP_JAVA_DB_UPDATE are set to 'true'
+            # If the cache is not found, the databases will be manually downloaded and extracted to avoid a fatal error during the first run.
+                  
+            # Set TRIVY_SKIP_DB_UPDATE based on cache hit
+            - name: Set TRIVY_SKIP_DB_UPDATE environment variable
+              if: steps.cache.outputs.cache-hit == 'true'
+              run: echo "TRIVY_SKIP_DB_UPDATE=true" >> $GITHUB_ENV
+
+            # Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
+            - name: Set TRIVY_SKIP_JAVA_DB_UPDATE environment variable
+              if: steps.cache.outputs.cache-hit == 'true'
+              run: echo "TRIVY_SKIP_JAVA_DB_UPDATE=true" >> $GITHUB_ENV
+
+            # Download and extract the Trivy vulnerability DB if DB cache does not exist
+            - name: Download and extract the Trivy vulnerability DB
+              if: env.TRIVY_SKIP_DB_UPDATE != 'true'
+              run: |
+                mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
+                oras pull ghcr.io/aquasecurity/trivy-db:2
+                tar -xzf db.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/db
+                rm db.tar.gz
+            
+            # Download and extract the Java vulnerability DB if DB cache does not exist
+            - name: Download and extract the Java DB
+              if: env.TRIVY_SKIP_JAVA_DB_UPDATE != 'true'
+              run: |
+                mkdir -p $GITHUB_WORKSPACE/.cache/trivy/java-db
+                oras pull ghcr.io/aquasecurity/trivy-java-db:1
+                tar -xzf javadb.tar.gz -C $GITHUB_WORKSPACE/.cache/trivy/java-db
+                rm javadb.tar.gz
           
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
-              uses: aquasecurity/trivy-action@0.28.0
+              uses: aquasecurity/trivy-action@0.20.0
               with:
                   scan-type: "fs"
                   ignore-unfixed: true
@@ -96,8 +127,15 @@ jobs:
                   severity: "HIGH,CRITICAL"
                   exit-code: 1
               env:
-                 TRIVY_SKIP_DB_UPDATE: true
-                 TRIVY_SKIP_JAVA_DB_UPDATE: true
+                 TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
+                 TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
+                 
+            - name: Save updated Trivy Cache
+              if: steps.cache.outputs.cache-hit != 'true'
+              uses: actions/cache@v3
+              with:
+                  path: ${{ github.workspace }}/.cache/trivy
+                  key: cache-trivy-${{ runner.os }}
                 
          # Secrets scan
             - name: Run TruffleHog scan
