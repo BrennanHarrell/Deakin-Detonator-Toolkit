@@ -35,6 +35,6 @@ jobs:
         uses: actions/cache@v4
         with:
           path: $GITHUB_WORKSPACE/.cache/trivy
-          key: cache-trivy-${{ runner.os }}-${{ steps.date.outputs.date }}
+          key: cache-trivy-${{ runner.os }}
           restore-keys: |
             cache-trivy-${{ runner.os }}-
