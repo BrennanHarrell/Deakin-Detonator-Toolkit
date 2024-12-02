@@ -78,7 +78,9 @@ jobs:
               
             # Ensure the Trivy cache directory exists
             - name: Ensure Trivy Cache Directory Exists
-              run: mkdir -p $GITHUB_WORKSPACE/.cache/trivy
+              run: | 
+                mkdir -p $GITHUB_WORKSPACE/.cache/trivy
+                chmod -R 777 $GITHUB_WORKSPACE/.cache/trivy
 
             # Restore Trivy Cache
             - name: Restore Trivy Cache
