@@ -82,7 +82,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: $GITHUB_WORKSPACE/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
+                key: cache-trivy-${{ runner.os }}
                 restore-keys: |
                   cache-trivy-${{ runner.os }}-
 
@@ -101,8 +101,7 @@ jobs:
               if: steps.cache.outputs.cache-hit == 'true'
               run: echo "TRIVY_SKIP_JAVA_DB_UPDATE=true" >> $GITHUB_ENV
               
-            # Vulnerability scanning
-            - name: Run Trivy vulnerability scanner in repo mode
+            - name: Run Trivy vulnerability scanner
               uses: aquasecurity/trivy-action@0.20.0
               with:
                 scan-type: "fs"
@@ -114,14 +113,13 @@ jobs:
                 TRIVY_CACHE_DIR: $GITHUB_WORKSPACE/.cache/trivy
                 TRIVY_SKIP_DB_UPDATE: ${{ env.TRIVY_SKIP_DB_UPDATE }}
                 TRIVY_SKIP_JAVA_DB_UPDATE: ${{ env.TRIVY_SKIP_JAVA_DB_UPDATE }}
-
-            # Save the updated cache if needed
-            - name: Save Trivy Cache
+      
+            - name: Save updated Trivy Cache
               if: steps.cache.outputs.cache-hit != 'true'
               uses: actions/cache@v4
               with:
                 path: $GITHUB_WORKSPACE/.cache/trivy
-                key: cache-trivy-${{ runner.os }}-${{ github.default_branch }}
+                key: cache-trivy-${{ runner.os }}
 
               # Secrets scan
             - name: Run TruffleHog scan
