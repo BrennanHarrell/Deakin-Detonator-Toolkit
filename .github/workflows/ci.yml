@@ -81,7 +81,7 @@ jobs:
               id: cache
               uses: actions/cache@v3
               with:
-                path: $GITHUB_WORKSPACE/.cache/trivy/db
+                path: ${{ github.workspace }}/.cache/trivy
                 key: cache-trivy-${{ runner.os }}
                 restore-keys: |
                   cache-trivy-${{ runner.os }}-
@@ -99,7 +99,6 @@ jobs:
                  TRIVY_SKIP_DB_UPDATE: true
                  TRIVY_SKIP_JAVA_DB_UPDATE: true
                 
-          
          # Secrets scan
             - name: Run TruffleHog scan
               run: |
