@@ -85,15 +85,6 @@ jobs:
                 key: cache-trivy-${{ runner.os }}
                 restore-keys: |
                   cache-trivy-${{ runner.os }}-
-
-            - name: Run Trivy scanner without downloading DBs
-              uses: aquasecurity/trivy-action@0.20.0
-              with:
-                scan-type: 'image'
-                scan-ref: 'myimage'
-              env:
-                TRIVY_SKIP_DB_UPDATE: true
-                TRIVY_SKIP_JAVA_DB_UPDATE: true
           
             # Vulnerability scanning
             - name: Run Trivy vulnerability scanner in repo mode
@@ -104,6 +95,9 @@ jobs:
                   format: "table"
                   severity: "HIGH,CRITICAL"
                   exit-code: 1
+              env:
+                 TRIVY_SKIP_DB_UPDATE: true
+                 TRIVY_SKIP_JAVA_DB_UPDATE: true
                 
           
          # Secrets scan
