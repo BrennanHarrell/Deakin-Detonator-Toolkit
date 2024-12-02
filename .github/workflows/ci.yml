@@ -79,6 +79,10 @@ jobs:
             - name: Ensure Cache Directory Exists
               run: mkdir -p $GITHUB_WORKSPACE/.cache/trivy
 
+            - name: Fix Permissions on .cache/trivy
+              run: sudo chmod -R 777 $GITHUB_WORKSPACE/.cache/trivy
+
+
             # Restore Trivy Cache
             - name: Restore Cache
               id: cache
