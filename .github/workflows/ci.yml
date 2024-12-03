@@ -100,7 +100,7 @@ jobs:
             # If the cache is not found, the required databases will be manually downloaded and extracted to prevent errors.
 
             - name: Download and Extract Trivy DB (on cache miss)
-              if: steps.cache.outputs.cache-hit == 'false'
+              if: steps.cache.outputs.cache-hit != 'true'
               run: |
                   mkdir -p $GITHUB_WORKSPACE/.cache/trivy/db
                   oras pull ghcr.io/aquasecurity/trivy-db:2
@@ -108,7 +108,7 @@ jobs:
                   rm db.tar.gz
 
             - name: Download and Extract Java DB (on cache miss)
-              if: steps.cache.outputs.cache-hit == 'false'
+              if: steps.cache.outputs.cache-hit != 'true'
               run: |
                   mkdir -p $GITHUB_WORKSPACE/.cache/trivy/java-db
                   oras pull ghcr.io/aquasecurity/trivy-java-db:1
