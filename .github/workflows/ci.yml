@@ -87,7 +87,7 @@ jobs:
                   path: ${{ github.workspace }}/.cache/trivy
                   key: cache-trivy-${{ steps.date.outputs.date }}
                   restore-keys: |
-                      cache-trivy-${{ steps.date.outputs.date }
+                      cache-trivy-${{ steps.date.outputs.date }}
 
             # Set environment to skip database updates if the cache is restored
             - name: Set TRIVY_SKIP_DB_UPDATE environment variable
